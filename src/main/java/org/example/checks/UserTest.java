@@ -280,5 +280,10 @@ public class UserTest {
             assertEquals(200, updateResponse.get().getStatusCode());
             assertEquals(404, deleteResponse.get().getStatusCode());
         }
+
+        else {
+            fail("Неожиданный статус код. Удаление: " + deleteResponse.get().getStatusCode()
+                    + ", Обновление: " + updateResponse.get().getStatusCode());
+        }
     }
 }
