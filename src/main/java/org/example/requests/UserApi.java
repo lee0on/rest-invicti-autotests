@@ -4,9 +4,9 @@ import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.example.payloads.User;
 
-public class UserApi {
+public class UserApi extends Api {
 
-    private static final String baseUrl = "http://rest.testsparker.com/basic_authentication/api/users";
+    private static final String baseUrl = apiUrl + "users";
 
     public static Response postUserJSON(User payload){
         return AuthHelper.login()

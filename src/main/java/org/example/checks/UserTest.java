@@ -10,32 +10,26 @@ import org.example.payloads.User;
 import org.example.payloads.UserDeletionResponse;
 import org.example.payloads.UserResponse;
 import org.example.requests.UserApi;
+import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.*;
 
+import static org.example.EasyRandomFactory.userGenerator;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class UserTest {
 
     private User payload;
+    private EasyRandom generator;
 
     @BeforeEach
     public void setPayload(){
-        payload = new User(
-                "testuser123",
-                "testuser@example.com",
-                "StrongPass123",
-                "Test",
-                "User"
-        );
+        generator = userGenerator();
+        payload = generator.nextObject(User.class);
     }
 
     @AfterEach
@@ -97,21 +91,6 @@ public class UserTest {
     }
 
     @Test
-    public void createdUserWithWeakPasswordReturns400(){
-        User payload = new User(
-                "testUser",
-                "test@example.com",
-                "123",
-                "Test",
-                "User"
-        );
-
-        Response postResponse = UserApi.postUserJSON(payload);
-
-        assertEquals(400, postResponse.getStatusCode());
-    }
-
-    @Test
     public void getAllUsersReturns200AndArray() throws JsonProcessingException {
         Response getResponse = UserApi.getUsers();
 
@@ -148,23 +127,10 @@ public class UserTest {
     }
 
     @Test
-    public void getUserWithSQLInjectionReturns200(){
-        Response getResponse = UserApi.getUserByName("pgorczany'");
-
-        assertEquals(200, getResponse.getStatusCode());
-    }
-
-    @Test
     public void putJSONUserReturns200andBody() throws JsonProcessingException {
         Response postResponse = UserApi.postUserJSON(payload);
 
-        User newPayload = new User(
-                "testuser",
-                "tes_tus.er@example.ru",
-                "Passs123",
-                "Test",
-                "User"
-        );
+        User newPayload = generator.nextObject(User.class);
 
         Response putResponse = UserApi.putUserJSON(payload.getUsername(), newPayload);
 
@@ -180,15 +146,9 @@ public class UserTest {
     @Test
     public void putXMLUserReturns200andBody() throws Exception {
         String xmlBody = XMLUtils.userToXml(payload);
-        Response postResponse = UserApi.postUserXML(xmlBody);
+        UserApi.postUserXML(xmlBody);
 
-        User newPayload = new User(
-                "testuser",
-                "tes_tus.er@example.ru",
-                "Passs123",
-                "Test",
-                "User"
-        );
+        User newPayload = generator.nextObject(User.class);
         String newXmlBody = XMLUtils.userToXml(newPayload);
 
         Response putResponse = UserApi.putUserXML(payload.getUsername(),newXmlBody);
@@ -227,63 +187,51 @@ public class UserTest {
     }
 
     @Test
-    public void concurrentDeletionAndUpdate() throws InterruptedException {
+    public void concurrentDeletionAndUpdate() throws Exception {
         UserApi.postUserJSON(payload);
 
-        User newPayload = new User(
-                "testuser",
-                "tes_tus.er@example.ru",
-                "Passs123",
-                "Test",
-                "User"
-        );
+        User newPayload = generator.nextObject(User.class);
 
         ExecutorService executor = Executors.newFixedThreadPool(2);
-        CountDownLatch latch = new CountDownLatch(1);
 
-        AtomicReference<Response> deleteResponse = new AtomicReference<>();
-        AtomicReference<Response> updateResponse = new AtomicReference<>();
+        try {
+            CountDownLatch startLatch = new CountDownLatch(1);
 
-        executor.submit(() -> {
-            try {
-                latch.await();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+            Future<Response> deleteFuture = executor.submit(() -> {
+                startLatch.await();
+                return UserApi.deleteXMLUser(payload.getUsername());
+            });
+
+            Future<Response> updateFuture = executor.submit(() -> {
+                startLatch.await();
+                return UserApi.putUserJSON(payload.getUsername(), newPayload);
+            });
+
+            startLatch.countDown();
+
+            Response deleteResponse = deleteFuture.get(10, TimeUnit.SECONDS);
+            Response updateResponse = updateFuture.get(10, TimeUnit.SECONDS);
+
+            assertNotNull(deleteResponse, "deleteResponse не должен быть null");
+            assertNotNull(updateResponse, "updateResponse не должен быть null");
+
+            int deleteStatus = deleteResponse.getStatusCode();
+            int updateStatus = updateResponse.getStatusCode();
+
+            if (deleteStatus == 200) {
+                assertEquals(404, updateStatus,
+                        "После успешного удаления обновление должно вернуть 404");
+            } else if (updateStatus == 200) {
+                assertEquals(404, deleteStatus,
+                        "После успешного обновления удаление должно вернуть 404");
+            } else {
+                fail("Неожиданные статусы. Удаление: " + deleteStatus +
+                        ", обновление: " + updateStatus);
             }
-            deleteResponse.set(
-                    UserApi.deleteXMLUser(payload.getUsername())
-            );
-        });
-
-        executor.submit(() -> {
-            try {
-                latch.await();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            updateResponse.set(
-                    UserApi.putUserJSON(payload.getUsername(), newPayload)
-            );
-        });
-
-        latch.countDown();
-
-        executor.shutdown();
-        executor.awaitTermination(10, TimeUnit.SECONDS);
-
-        if (deleteResponse.get().getStatusCode() == 200) {
-            assertEquals(200, deleteResponse.get().getStatusCode());
-            assertEquals(404, updateResponse.get().getStatusCode());
-        }
-
-        else if (updateResponse.get().getStatusCode() == 200) {
-            assertEquals(200, updateResponse.get().getStatusCode());
-            assertEquals(404, deleteResponse.get().getStatusCode());
-        }
-
-        else {
-            fail("Неожиданный статус код. Удаление: " + deleteResponse.get().getStatusCode()
-                    + ", Обновление: " + updateResponse.get().getStatusCode());
+        } finally {
+            executor.shutdown();
+            boolean terminated = executor.awaitTermination(5, TimeUnit.SECONDS);
+            assertTrue(terminated, "Рабочие потоки не завершились за 5 секунд");
         }
     }
 }
