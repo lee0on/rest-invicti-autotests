@@ -66,8 +66,8 @@ public class UserTest {
 
 
         assertEquals(200, postResponse.getStatusCode());
-        assertEquals("testuser@example.com", createdUser.getEmail());
-        assertEquals("testuser123", createdUser.getUsername());
+        assertEquals(payload.getEmail(), createdUser.getEmail());
+        assertEquals(payload.getUsername(), createdUser.getUsername());
 
         Response getResponse = UserApi.getUserByName(payload.getUsername());
 
@@ -128,7 +128,7 @@ public class UserTest {
 
     @Test
     public void putJSONUserReturns200andBody() throws JsonProcessingException {
-        Response postResponse = UserApi.postUserJSON(payload);
+        UserApi.postUserJSON(payload);
 
         User newPayload = generator.nextObject(User.class);
 
