@@ -1,4 +1,4 @@
-package org.example;
+package org.example.factories;
 
 import net.datafaker.Faker;
 import net.datafaker.providers.base.Text;

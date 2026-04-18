@@ -2,7 +2,7 @@ package org.example.requests;
 
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import org.example.payloads.User;
+import org.example.payloads.request.User;
 
 public class UserApi extends Api {
 

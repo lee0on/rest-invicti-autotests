@@ -5,10 +5,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import io.restassured.response.Response;
-import org.example.XMLUtils;
-import org.example.payloads.User;
-import org.example.payloads.UserDeletionResponse;
-import org.example.payloads.UserResponse;
+import org.example.utils.XMLUtils;
+import org.example.payloads.request.User;
+import org.example.payloads.response.UserDeletionResponse;
+import org.example.payloads.response.UserResponse;
 import org.example.requests.UserApi;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.AfterEach;
@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.concurrent.*;
 
-import static org.example.EasyRandomFactory.userGenerator;
+import static org.example.factories.EasyRandomFactory.userGenerator;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class UserTest {

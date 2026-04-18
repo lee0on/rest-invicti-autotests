@@ -1,4 +1,4 @@
-package org.example.payloads;
+package org.example.payloads.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;

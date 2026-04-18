@@ -1,4 +1,4 @@
-package org.example.payloads;
+package org.example.payloads.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

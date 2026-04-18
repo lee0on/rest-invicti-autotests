@@ -1,6 +1,6 @@
-package org.example;
-import org.example.payloads.User;
-import org.example.payloads.UserResponse;
+package org.example.utils;
+import org.example.payloads.request.User;
+import org.example.payloads.response.UserResponse;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;

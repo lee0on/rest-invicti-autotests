@@ -1,0 +1,47 @@
+project:
+  name: "api-test-framework"
+  type: "api-testing-framework"
+  version: "1.0.0"
+
+language:
+  primary: "java"
+  version: "17"
+  build_tool: "maven"
+
+framework:
+  http_client: "rest-assured"
+  test_runner: "junit5"
+  assertions: "junit"
+  mocking: "wiremock"
+  bdd: "cucumber"
+  serialization: "jackson"
+
+structure:
+  base_package: "com.example"
+  payloads_path: "src/main/java/com/example/payloads"
+  requests_path: "src/main/java/com/example/requests"
+  checks_path: "src/main/java/com/example/checks"
+  mocks_path: "src/test/java/mocks"
+  features_path: "src/test/resources/features"
+  bdd_steps_path: "src/main/java/com/example/steps"
+  specs_path: "specs/"
+
+conventions:
+  naming:
+    payload_suffix: "Payload"       # BookingPayload, AuthPayload
+    request_suffix: "Api"           # BookingApi, AuthApi
+    check_suffix: "Test"            # BookingTest, AuthTest
+    mock_suffix: "MockingTest"      # BookingMockingTest
+    step_suffix: "Steps"            # BookingSteps
+  patterns:
+    request_methods: "static"       # static methods in request classes
+    payload_style: "builder"        # builder, constructor, setters
+    assertion_style: "fluent"       # fluent chain assertions
+
+apis:
+  - name: ""
+    spec: "specs/.yaml"
+    base_url_env: "_API_URL"
+  - name: ""
+    spec: "specs/.yaml"
+    base_url_env: "_API_URL"
