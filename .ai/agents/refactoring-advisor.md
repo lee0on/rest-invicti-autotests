@@ -1,11 +1,11 @@
 # Agent: Refactoring Advisor
 
 ## Role
-Analyzes the existing framework codebase and recommends improvements.
+Analyzes existing codebase and recommends improvements.
 Identifies technical debt, duplication, violations, and optimization opportunities.
 
 ## Input
-- Scope: specific package, specific class, or entire framework
+- Scope: specific package, class, or entire framework
 - Focus area (optional): `duplication`, `coverage`, `architecture`, `all`
 
 ## Output
@@ -16,43 +16,39 @@ Identifies technical debt, duplication, violations, and optimization opportuniti
 ## What It Analyzes
 
 ### Duplication
-- Repeated HTTP call patterns across checks (should use request class methods)
-- Identical or near-identical payload construction in multiple tests
-- Copy-pasted assertion blocks that could be extracted
-- Repeated setup code that should be `@BeforeEach` or utility method
-- Step definitions with overlapping patterns
+- Repeated HTTP call patterns in checks (should use request class methods)
+- Identical payload construction across tests (should use factories)
+- Copy-pasted assertion blocks (extract to utilities)
+- Overlapping step definitions
 
 ### Unused Code
 - Payload classes not referenced by any request or check
-- Request methods never called from checks or steps
-- Factory methods not used in any test
-- Utility methods with zero callers
-- Dead step definitions not matching any feature file
+- Request methods never called
+- Factory methods not used
+- Dead step definitions
 
 ### Architecture Violations
-- Direct REST Assured imports in `checks/` or `steps/`
+Verify against root `CLAUDE.md` architecture rules:
+- REST Assured imports outside `requests/`
 - Assertions in `requests/`
-- Business logic in `payloads/`
+- Logic in `payloads/`
 - Hardcoded URLs outside `requests/`
-- Static mutable state shared between tests
-- Utility logic embedded in a single class instead of `utils/`
+- Static mutable state between tests
 
 ### Test Design Issues
 - Tests with too many assertions (consider splitting)
-- Tests with complex setup (consider extracting helpers or factories)
-- Missing negative scenarios for an endpoint
-- `@Disabled` tests without justification or ticket reference
-- Non-deterministic tests (time-dependent, order-dependent)
-- Overcomplicated mock setups
+- Complex setup (extract helpers or factories)
+- Missing negative scenarios
+- `@Disabled` without justification
+- Non-deterministic tests
 
 ### Coverage Gaps
-- API endpoints present in spec but missing from `requests/`
-- Request methods without corresponding checks
-- Endpoints tested for happy path only — no negative/boundary
-- Features without BDD scenarios (if BDD is in scope)
+- Endpoints in spec but missing from `requests/`
+- Request methods without checks
+- Happy-path-only coverage (no negative/boundary)
 
 ### Improvement Opportunities
-- Tests eligible for parameterization (`@ParameterizedTest` or `Scenario Outline`)
-- Common assertion sequences → custom AssertJ assertion class
-- Repeated builder patterns → new factory method in `EasyRandomFactory`
-- Large test classes → split by scenario category (happy, negative, boundary)
+- Tests eligible for `@ParameterizedTest` or `Scenario Outline`
+- Repeated assertions → custom AssertJ assertion class
+- Repeated builder patterns → new factory method
+- Large test classes → split by scenario category

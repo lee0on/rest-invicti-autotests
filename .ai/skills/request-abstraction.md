@@ -1,62 +1,36 @@
 # Skill: Request Abstraction
 
 ## Purpose
-Build HTTP request methods that encapsulate endpoint details so that URL,
-method, headers, and auth are defined in exactly one place.
+Build HTTP request methods encapsulating endpoint details in one place.
 
-## Class Design
-One class per API domain. Class contains a shared request specification
-configured once at class level with base URI from environment or config,
-content type, accept header, and auth setup. All methods are static and
-return the raw response object.
+> Class design, naming, and method signature pattern: see `requests/CLAUDE.md`.
 
 ## Method Design per HTTP Verb
 
 ### GET by ID
-Accepts resource identifier as parameter. Uses path parameter substitution.
-Returns response.
+Accepts resource identifier. Uses `pathParam()` substitution. Returns `Response`.
 
 ### GET with filters
-Accepts filter values as method parameters. Applies them as query parameters.
-Returns response.
+Accepts filter values as parameters. Applies via `queryParam()`. Returns `Response`.
 
 ### GET all
-No parameters beyond the shared specification. Returns response.
+No parameters beyond shared spec. Returns `Response`.
 
 ### POST
-Accepts request payload object as parameter. Serializes it as request body.
-Returns response.
+Accepts request payload object. Serializes as body. Returns `Response`.
 
 ### PUT
-Accepts resource identifier and full payload object. Uses path parameter
-for ID, payload as body. Returns response.
+Accepts resource ID and full payload. Path param for ID, payload as body.
 
 ### PATCH
-Accepts resource identifier and partial payload object. Same structure as PUT
-but semantically a partial update. Returns response.
+Accepts resource ID and partial payload. Same structure as PUT.
 
 ### DELETE
-Accepts resource identifier. Uses path parameter. Returns response.
-
-## Method Naming Convention
-- Get one: getEntity
-- Get all: getAllEntities
-- Get filtered: getEntitiesbyFilter
-- Create: createEntity
-- Full update: updateEntity
-- Partial update: partialUpdateEntity
-- Delete: deleteEntity
-- Custom actions: verbEntityDetail
+Accepts resource identifier. Uses path param. Returns `Response`.
 
 ## Key Principles
-- Always return raw response — never deserialize inside request methods
-- Never assert inside request methods
-- Use path parameter substitution — never string concatenation for URLs
-- One method equals one endpoint call
-- Every public method has documentation describing the endpoint, HTTP method,
-  path, parameters, and return value
-- Base URL is never hardcoded — always read from environment or configuration
-
-## Dependency Requirement
-All payload classes referenced in method signatures must already exist.
-If missing, report to the orchestrator rather than creating placeholder types.
+- Always return raw `Response` — never deserialize in request methods
+- Never assert in request methods
+- Use `pathParam()` — never string concatenation for URLs
+- One method = one endpoint call
+- Base URL from environment or config, never hardcoded

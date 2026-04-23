@@ -1,16 +1,16 @@
 # Checks Package
 
 ## Purpose
-Automated test checks — the top layer of the framework.
-This is where we verify API behavior by combining payloads, requests, and assertions.
-The primary goal is **maximum readability**: anyone should understand
-what a check does just by reading it.
+Test classes — the top layer of the framework.
+Verify API behavior by combining payloads, requests, and assertions.
+Primary goal: **maximum readability**.
+
+> Architecture constraints (no direct HTTP calls, no REST Assured imports): see root `CLAUDE.md`.
 
 ## Rules
-- Naming: `{Feature}Test`
-- JUnit 5 annotations: `@Test`, `@DisplayName`, `@Tag`
-- `@DisplayName` is **mandatory** on every test — human-readable sentence
+- `@DisplayName` **mandatory** on every test — human-readable sentence
 - `@Tag` for categorization: `"smoke"`, `"regression"`, `"negative"`, `"boundary"`
+- No `@Disabled` without an explanatory comment
 
 ## Test Structure (Arrange → Act → Assert)
 ```java
@@ -18,14 +18,14 @@ what a check does just by reading it.
 @DisplayName("Successfully create a new booking with valid data")
 @Tag("smoke")
 void testCreateBooking() {
-    // Arrange — prepare test data
+    // Arrange
     EasyRandom generator = EasyRandomFactory.bookingGenerator();
     BookingRequestPayload payload = generator.nextObject(BookingRequestPayload.class);
 
-    // Act — send request via request class
+    // Act
     Response response = BookingApi.createBooking(payload);
 
-    // Assert — verify outcome
+    // Assert
     assertThat(response.getStatusCode()).isEqualTo(200);
     BookingResponsePayload booking = response.as(BookingResponsePayload.class);
     assertThat(booking.getFirstname()).isEqualTo(payload.getFirstname());
@@ -35,37 +35,22 @@ void testCreateBooking() {
 
 ## Test Coverage Strategy
 
-### For each endpoint, cover these categories:
-
-| Category       | Examples                                          |
-|----------------|---------------------------------------------------|
-| Happy path     | Valid data → expected success response            |
-| Validation     | Missing required fields → 400                     |
-| Auth           | No token / invalid token → 401/403                |
-| Not found      | Non-existent resource → 404                       |
-| Boundary       | Min/max values, empty strings, special characters |
-| Business rules | Domain-specific constraints from requirements     |
-| Idempotency    | Duplicate POST, double DELETE                     |
-
+| Category       | Examples                                         |
+|----------------|--------------------------------------------------|
+| Happy path     | Valid data → expected success response           |
+| Validation     | Missing required fields → 400                    |
+| Auth           | No token / invalid token → 401/403               |
+| Not found      | Non-existent resource → 404                      |
+| Boundary       | Min/max values, empty strings, special characters|
+| Business rules | Domain-specific constraints                      |
+| Idempotency    | Duplicate POST, double DELETE                    |
 
 ## Assertion Style
-
-- Be specific: check exact values, not just non-null
-- For collections: use extracting(), containsExactly(), hasSize()
-- For error responses: verify both status code AND error message body
+- Check exact values, not just non-null
+- Collections: `extracting()`, `containsExactly()`, `hasSize()`
+- Error responses: verify both status code AND error message body
+- See `assertion-patterns` skill for full catalog
 
 ## Data Generation
-
-- Use EasyRandomFactory for realistic randomized data
-- Override specific fields via Builder only when the test requires controlled values
-- NEVER use hardcoded dummy data like "test", "abc123", "John Doe"
-
-## Anti-Patterns
-
-- Do NOT import io.restassured — use request classes instead
-- Do NOT construct URLs or make HTTP calls directly
-- Do NOT use assertNotNull() as the only assertion
-- Do NOT use assertTrue(body.contains(...)) — fragile
-- Do NOT share mutable state between tests
-- Do NOT depend on test execution order
-- Do NOT use @Disabled without a comment explaining why
+- `EasyRandomFactory` for default data
+- Builder only when the test requires controlled values

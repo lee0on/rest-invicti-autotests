@@ -1,22 +1,16 @@
 # Features (Gherkin / Cucumber BDD)
 
 ## Purpose
-Gherkin feature files for Behavior-Driven Development.
-These files describe API behavior in business-readable language.
+Gherkin feature files describing API behavior in business-readable language.
+
+> See `gherkin-authoring` skill for detailed step writing rules, parameterization, and language guidelines.
 
 ## Rules
 - File naming: `{domain}.feature` (lowercase, underscores)
-- Language: plain English, business-oriented, NOT technical
-- Every Feature has a descriptive `Feature:` title
+- Every feature has a descriptive `Feature:` title
 - Use `Background:` for shared preconditions within a feature
 - Use `Scenario Outline:` + `Examples:` for data-driven scenarios
-- Tags for filtering: `@smoke`, `@regression`, `@{api-name}`, `@negative`
-
-## Step Structure
-- **Given** = precondition, data setup, system state
-- **When** = single action (one HTTP call)
-- **Then** = verification of outcome, observable result
-- **And** / **But** = continuation of the previous step type
+- Tags: `@smoke`, `@regression`, `@negative`, `@{api-name}`
 
 ## Writing Style
 ```gherkin
@@ -54,16 +48,10 @@ Feature: Booking management
 ```
 
 ## Step Reusability
-
-- Write steps to be generic and reusable across scenarios
-- Avoid scenario-specific steps — extract parameters instead
+- Write generic, parameterized steps — avoid scenario-specific ones
 - Before writing a new step, check existing step definitions for reuse
 
 ## Anti-Patterns
-
-- Do NOT include technical details (status codes, JSON fields) in step text
-- BAD: Then I receive HTTP 400 with body containing "error"
-- GOOD: Then I receive a bad request error
-- Do NOT write compound When steps (only one action per When)
-- Do NOT write Given steps that are actually assertions
-- Do NOT create scenario-specific steps that cannot be reused
+- Technical details in step text (status codes, JSON fields, URLs)
+- Compound `When` steps performing multiple actions
+- `Given` steps that are actually assertions

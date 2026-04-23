@@ -2,48 +2,26 @@
 
 ## Purpose
 Generate typed data classes from API schemas, examples, or descriptions.
-Supports JSON and XML serialization formats.
+
+> Naming conventions, annotation rules, and type mapping: see `payloads/CLAUDE.md`.
 
 ## Class Structure Order
-Package declaration, imports, class-level annotations, private fields with
-field-level annotations, no-arg constructor, getters and setters, toString,
-equals and hashCode, Builder inner class (request payloads only).
-
-## Annotation Rules
-- JSON request payloads: class-level non-null inclusion, field-level explicit
-  property name mapping
-- JSON response payloads: class-level ignore-unknown-properties, field-level
-  explicit property name mapping
-- XML payloads: class-level root element with local name, field-level property
-  with local name. Lists require element wrapper annotation. Attributes use
-  the attribute flag. Text content uses text annotation.
-- Dual format: apply both JSON and XML annotations on the same class and fields
-
-## Type Mapping Principles
-- Use wrapper types (Integer, Boolean, Long) instead of primitives to support nullability
-- Strings for date/time fields unless date operations are explicitly needed
-- Every nested object becomes a separate class in the same sub-package
-- Arrays map to List of typed elements, never raw arrays
-- Generic objects map to dedicated classes, never to Map
+1. Package declaration
+2. Imports
+3. Class-level annotations
+4. Private fields with field-level annotations
+5. No-arg constructor
+6. Getters and setters
+7. `toString()`, `equals()`, `hashCode()`
+8. Builder inner class (request payloads only)
 
 ## Request vs Response Differences
-- Request payloads include Builder pattern for fluent construction in tests
-- Response payloads use no-arg constructor plus setters for deserialization
-- Response payloads are more permissive with unknown fields
-- Request payloads exclude null fields from serialization
+- **Request**: Builder pattern, `@JsonInclude(NON_NULL)`, exclude null fields
+- **Response**: No-arg constructor + setters, `@JsonIgnoreProperties(ignoreUnknown = true)`
 
-## Naming
-- Request: EntityNameRequestPayload
-- Response: EntityNameResponsePayload
-- Nested: ParentChildPayload or standalone ChildPayload if reused independently
-- One class per file, one entity per class
-
-## Mandatory Methods
-Every payload class must have toString (for readable test output), equals and
-hashCode (for assertion comparisons). Builder inner class with static factory
-method for request payloads.
-
-## Language Adaptation
-- Java: Jackson annotations, inner Builder class
-- Python: Pydantic BaseModel with Field descriptors
-- TypeScript: interface for responses, class with Zod schema for requests
+## Key Principles
+- Wrapper types (Integer, Boolean) not primitives — supports nullability
+- Strings for date/time unless operations needed
+- Nested objects → separate class in same sub-package
+- Arrays → `List<T>`, never raw arrays
+- Generic objects → dedicated class, never `Map`

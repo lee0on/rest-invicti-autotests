@@ -70,11 +70,8 @@ mvn spotless:apply                                # format code
 - Payload classes use Jackson annotations and Builder pattern
 
 ### 4. Utility Extraction
-- Common reusable methods MUST be extracted into utility classes under `utils/`
-- Examples: date formatting, auth token generation, response parsing helpers,
-  common assertion helpers, configuration readers
-- Each utility class should be focused on a single concern
-- Utility classes are `final` with a `private` constructor (static methods only)
+- Reusable methods used in 2+ classes MUST go into `utils/`
+- Each utility class: `final`, private constructor, static methods only, single concern
 
 ### 5. Test Independence
 - Every test must be independent and self-contained
@@ -83,72 +80,32 @@ mvn spotless:apply                                # format code
 
 ---
 
-## Package Conventions
+## Package Naming Quick Reference
 
-### Payloads (`org.example.payloads`)
-- Class naming: `{Entity}{Request|Response}Payload`
-    - Examples: `BookingRequestPayload`, `UserResponsePayload`
-- Jackson annotations required: `@JsonProperty`, `@JsonInclude(NON_NULL)`
-- Use `@JsonIgnoreProperties(ignoreUnknown = true)` on response payloads
-- Implement Builder pattern for request payloads
-- Include `toString()`, `equals()`, `hashCode()`
+| Package      | Class Pattern                        | Example                  |
+|--------------|--------------------------------------|--------------------------|
+| `payloads/`  | `{Entity}{Request\|Response}Payload` | `BookingRequestPayload`  |
+| `requests/`  | `{ApiName}Api`                       | `BookingApi`             |
+| `checks/`    | `{Feature}Test`                      | `BookingTest`            |
+| `factories/` | `EasyRandomFactory`                  | `EasyRandomFactory`      |
+| `utils/`     | `{Concern}Utils`                     | `DateUtils`              |
+| `mocks/`     | `{ApiName}Mock`                      | `BookingMock`            |
+| `steps/`     | `{Domain}Steps`                      | `BookingSteps`           |
 
-### Requests (`org.example.requests`)
-- Class naming: `{ApiName}Api`
-    - Examples: `BookingApi`, `AuthApi`
-- All methods are **static**
-- Every method returns REST Assured `Response` object
-- Methods accept payload objects or primitive parameters (ids, filters)
-
-### Checks (`org.example.checks`)
-- Class naming: `{Feature}Test`
-    - Examples: `BookingTest`, `AuthTest`
-- `@DisplayName` is **mandatory** on every test — must be human-readable
-- `@Tag` for categorization: `"smoke"`, `"regression"`, `"negative"`
-- Test structure: **Arrange** (build data) → **Act** (call request) → **Assert** (verify)
-
-### Factories (`org.example.factories`)
-- Class naming: `EasyRandomFactory` (or `{Domain}DataFactory` for complex cases)
-- Classes are `final` with `private` constructor
-- Use EasyRandom + JavaFaker for realistic data generation
-- Each factory method returns a configured `EasyRandom` instance for a specific entity
-- Field randomization is explicitly configured via `EasyRandomParameters`
-  using `FieldPredicates.named()` and corresponding Faker providers
-
-### Utils (`org.example.utils`)
-- Class naming: `{Concern}Utils`
-    - Examples: `DateUtils`, `AuthUtils`, `ResponseUtils`, `ConfigUtils`
-- Classes are `final` with `private` constructor (non-instantiable)
-- All methods are **static**
-- Single responsibility: one utility class per concern
-- Javadoc on every public method
-- Extract here any helper logic used across 2+ classes in the framework
-
-### Mocks (`org.example.mocks`)
-- WireMock stubs for isolating tests from external API dependencies
-- Cover scenarios: success, client error (4xx), server error (5xx), timeout
-
-### BDD Features (`src/test/resources/features`)
-- Given = precondition / data setup
-- When = single action (one HTTP call)
-- Then = verification of outcome
-- Reuse existing step definitions wherever possible
-- Tags: `@smoke`, `@regression`, `@{api-name}`
+> Full rules for each package: see the `CLAUDE.md` in that package's directory.
 
 ---
 
 ## Before Generating Code
-1. Read `.ai/config.yaml` for current conventions and settings
-2. Read the `CLAUDE.md` in the target directory for package-specific rules
+1. Read `.ai/config.yaml` for conventions
+2. Read the `CLAUDE.md` in the target package directory
 3. Analyze existing files in the target package for consistency
-4. Check if related payloads/requests already exist before creating new ones
-5. Verify that factory methods exist for the relevant entity; create if missing
+4. Check if related payloads/requests already exist — avoid duplicates
+5. Verify factory methods exist for the entity; create if missing
 
 ## Anti-Patterns (AVOID)
-- `assertNotNull(response)` without further specific assertions
-- `assertTrue(body.contains("..."))` — fragile string matching
-- HTTP calls directly in test methods
+- `assertNotNull(response)` without specific field assertions
+- `assertTrue(body.contains("..."))` — use deserialized field comparison
+- HTTP calls directly in test methods (use `requests/` classes)
 - Hardcoded URLs, ports, or environment-specific values
-- Magic numbers or strings without named constants
-- Duplicated utility logic across multiple classes
-- Constructing payloads with meaningless test data instead of using factories
+- Constructing payloads with dummy values — use factories

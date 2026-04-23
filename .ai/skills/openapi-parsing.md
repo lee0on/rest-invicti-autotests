@@ -1,46 +1,39 @@
 # Skill: OpenAPI Parsing
 
 ## Purpose
-Extract structured information from OpenAPI 3.x / Swagger 2.0 specifications
-to feed into other agents.
+Extract structured information from OpenAPI 3.x / Swagger 2.0 specifications.
 
 ## What to Extract
 
 ### Per Endpoint
-- Operation ID, HTTP method, path, summary, description
-- Tags for API grouping
-- Deprecation status
-- Path parameters with name, type, required flag
-- Query parameters with name, type, required flag, enum values if any
-- Header parameters with name, type, required flag
-- Request body: content type, schema reference or inline definition, required flag
-- Responses: status code, description, content type, schema reference or inline
+- Operation ID, HTTP method, path, summary, tags, deprecation status
+- Path/query/header parameters: name, type, required, enum values
+- Request body: content type, schema (reference or inline), required flag
+- Responses: status code, description, content type, schema
 
-### Per Schema / Model
-- Name, type (object, array, enum, primitive)
-- Properties: name, type, format, required flag, constraints (min, max, pattern)
-- Nested references — resolve recursively to build full object tree
+### Per Schema
+- Name, type, properties with name/type/format/required/constraints
+- Nested references — resolve recursively
 - Discriminator for polymorphic models
 
 ### Authentication
-- Security scheme type (HTTP, API key, OAuth2)
-- Scheme details (bearer, basic)
+- Scheme type (HTTP, API key, OAuth2), details (bearer, basic)
 - Parameter location (header, query, cookie)
-- Whether applied globally or per endpoint
+- Global vs per-endpoint scope
 
 ## Version Differences
-- OpenAPI 3.x stores models in `components.schemas`, request bodies in `requestBody.content`,
-  auth in `components.securitySchemes`, server URL in `servers[].url`
-- Swagger 2.0 stores models in `definitions`, body in `parameters[in=body]`,
-  auth in `securityDefinitions`, server URL as `host` + `basePath`
-- Content types in 3.x are per-operation; in 2.0 they are global `consumes`/`produces`
+| Aspect        | OpenAPI 3.x                  | Swagger 2.0               |
+|---------------|------------------------------|----------------------------|
+| Models        | `components.schemas`         | `definitions`              |
+| Request body  | `requestBody.content`        | `parameters[in=body]`      |
+| Auth          | `components.securitySchemes` | `securityDefinitions`      |
+| Server URL    | `servers[].url`              | `host` + `basePath`        |
+| Content types | Per-operation                | Global `consumes`/`produces`|
 
 ## Output Format
-Produce a structured text summary per endpoint listing: operation ID, method, path,
-auth requirement, request body schema with field names/types/required flags,
-and response schemas per status code. Mark each field's constraints where known.
+Structured text per endpoint: operation ID, method, path, auth, request body
+schema (fields/types/required), response schemas per status code, constraints.
 
 ## When Spec Is Unavailable
-Construct equivalent information from example curl commands, sample HTTP
-request/response pairs, HTML/PDF documentation, or verbal descriptions.
-Flag confidence level: high (from spec), medium (from examples), low (from description).
+Construct from curl examples, HTTP samples, or documentation.
+Flag confidence: high (spec), medium (examples), low (description).

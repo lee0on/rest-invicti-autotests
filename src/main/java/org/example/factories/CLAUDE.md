@@ -1,18 +1,13 @@
 # Factories Package
 
 ## Purpose
-Data generation factories using EasyRandom + JavaFaker.
-Provides configured generators that produce realistic randomized
-payload objects for use in tests.
+EasyRandom + JavaFaker generators producing realistic randomized payload objects.
 
 ## Rules
-- Classes are `final` with `private` constructor (non-instantiable)
-- Faker instance is a `private static final` field (shared)
-- Each public method returns a configured `EasyRandom` instance for one entity
-- Method naming: `{entity}Generator()` — e.g., `userGenerator()`, `bookingGenerator()`
-- Every field in the target payload MUST have an explicit `randomize()` rule
-  using `FieldPredicates.named("field_name")` and a matching Faker provider
-- Use `.seed(value)` for reproducible generation when needed
+- Each public method returns a configured `EasyRandom` for one entity
+- Method naming: `{entity}Generator()` — e.g., `bookingGenerator()`
+- Every field MUST have an explicit `randomize()` rule via `FieldPredicates.named()`
+- Faker instance: `private static final` (shared across methods)
 
 ## Pattern
 ```java
@@ -42,7 +37,6 @@ public final class EasyRandomFactory {
 ```
 
 ## Usage in Tests
-
 ```java
 private EasyRandom generator;
 
@@ -54,15 +48,14 @@ public void setPayload(){
 ```
 
 ## When Adding a New Generator
+1. Identify all fields in the target request payload
+2. Map each field to an appropriate Faker provider
+3. For constrained fields (length, format) — create a private helper method
+4. Add the method to `EasyRandomFactory` (or a dedicated factory class)
 
-- Identify all fields in the target request payload class
-- Map each field to an appropriate Faker provider
-- For fields with specific constraints (length, format), create a private helper method
-- Add the generator method to EasyRandomFactory (or a dedicated factory class)
-- Verify by generating an instance and printing toString()
+> See `test-data-generation` skill for Faker provider selection guide and data categories.
 
 ## Anti-Patterns
-
-- Do NOT leave fields without explicit randomize rules — EasyRandom defaults are not realistic
-- Do NOT use random strings for structured fields (emails, phones, dates)
-- Do NOT instantiate Faker per method call — use the shared static instance
+- Fields without explicit randomize rules — EasyRandom defaults are not realistic
+- Random strings for structured fields (emails, phones, dates) — use Faker providers
+- New Faker instance per method call — use the shared static instance

@@ -3,7 +3,6 @@
 ## Role
 Creates or extends HTTP request abstraction classes.
 Each class groups all endpoints for one API domain.
-This is the only place where REST Assured calls and URLs exist.
 
 ## Input
 - Endpoint(s): HTTP method, path, path/query parameters, headers
@@ -17,23 +16,12 @@ This is the only place where REST Assured calls and URLs exist.
 
 ## Instructions
 
-1. Read `requests/CLAUDE.md` for package rules
-2. Determine: new class or method addition to existing class?
-    - If class exists → add method, preserve existing code
-    - If new → create class with shared `RequestSpecification`
-3. Define `RequestSpecification` at class level:
-    - Base URI from environment variable or config
-    - Content-Type header
-    - Accept header
-    - Auth setup (if applies to all endpoints in this API)
-4. For each endpoint, create a static method:
-    - Name: descriptive verb matching the action
-    - Parameters: payload object and/or primitives (id, filters)
-    - Return type: `Response` (REST Assured)
-    - Pattern: `given().spec(requestSpec).body(payload).when().post(path).then().extract().response()`
-5. Path parameters: use REST Assured `pathParam()`
-6. Query parameters: accept as method parameters, apply via `queryParam()`
-7. Add Javadoc on every method: purpose, HTTP method, path, params, return
+1. Read `requests/CLAUDE.md` for class design, naming, and method patterns
+2. Use `request-abstraction` skill for per-verb method design
+3. Determine: new class or method addition to existing class?
+   - Existing class → add method, preserve existing code
+   - New class → create with shared `RequestSpecification`
+4. Add Javadoc on every method
 
 ## Dependency Check
 Payload classes referenced in method signatures must already exist.

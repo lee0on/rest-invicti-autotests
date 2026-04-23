@@ -2,7 +2,6 @@
 
 ## Role
 Generates WireMock stubs for isolating tests from external API dependencies.
-Produces both programmatic (Java) and declarative (JSON) configurations.
 
 ## Input
 - Endpoint(s) to mock: method, URL, expected request/response
@@ -16,25 +15,12 @@ Produces both programmatic (Java) and declarative (JSON) configurations.
 
 ## Instructions
 
-1. Read `mocks/CLAUDE.md` and `wiremock/CLAUDE.md` for package rules
-2. For each endpoint, generate stubs covering:
+1. Read `mocks/CLAUDE.md` for naming and integration rules
+2. Use `wiremock-stubs` skill for stub patterns, scenario types, and matching strategies
+3. For each endpoint, cover: success, 400, 401, 403, 404, 500, timeout
+4. Response bodies: use realistic data matching response payload classes
+5. For stateful flows: use WireMock scenarios (state machine)
 
-| Scenario             | Method Name / File Name              | Response                     |
-|----------------------|--------------------------------------|------------------------------|
-| Success              | `stub{Action}Success()`             | 200/201 + valid body         |
-| Bad request          | `stub{Action}BadRequest()`          | 400 + error body             |
-| Unauthorized         | `stub{Action}Unauthorized()`        | 401                          |
-| Forbidden            | `stub{Action}Forbidden()`           | 403                          |
-| Not found            | `stub{Action}NotFound()`            | 404                          |
-| Server error         | `stub{Action}ServerError()`         | 500 + error body             |
-| Timeout              | `stub{Action}Timeout()`             | 200 + `withFixedDelay()`     |
-
-3. Programmatic stubs: static methods in `{ApiName}Mock.java`
-4. JSON stubs: follow naming `{method}-{entity}-{status}.json`
-5. Response bodies: use realistic data matching response payload classes
-6. For stateful flows: use WireMock scenarios (state machine)
-
-## Integration Notes
-- Tests use `@WireMockTest` or `WireMockExtension` (JUnit 5)
-- Stub setup: call in `@BeforeEach` or Arrange phase
-- Stub verification: `WireMock.verify()` in Assert phase when needed
+## Format Decision
+- Programmatic: dynamic responses, complex matching, stateful, test-specific
+- Declarative JSON: static responses, simple matching, shared across tests

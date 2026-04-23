@@ -17,13 +17,13 @@ framework:
   serialization: "jackson"
 
 structure:
-  base_package: "com.example"
-  payloads_path: "src/main/java/com/example/payloads"
-  requests_path: "src/main/java/com/example/requests"
-  checks_path: "src/main/java/com/example/checks"
+  base_package: "org.example"
+  payloads_path: "src/main/java/org/example/payloads"
+  requests_path: "src/main/java/org/example/requests"
+  checks_path: "src/main/java/org/example/checks"
   mocks_path: "src/test/java/mocks"
   features_path: "src/test/resources/features"
-  bdd_steps_path: "src/main/java/com/example/steps"
+  bdd_steps_path: "src/main/java/org/example/steps"
   specs_path: "specs/"
 
 conventions:

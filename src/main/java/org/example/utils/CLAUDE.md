@@ -1,35 +1,25 @@
 # Utils Package
 
 ## Purpose
-Shared utility classes containing reusable static helper methods
-used across multiple parts of the framework.
+Shared static helper methods used across 2+ classes in the framework.
 
-## Rules
-- Naming: `{Concern}Utils`
-- Every class is `final` with a `private` constructor
-- All methods are `static`
-- **Single responsibility**: one utility class per concern
-- Javadoc on every public method (purpose, params, return, example)
-- Extract here only when a helper is used in **2 or more** classes
+> Class conventions (final, private constructor, static methods, Javadoc): see root `CLAUDE.md`.
 
 ## What Belongs Here
-
 - Date/time formatting and calculation
 - Auth token generation and header construction
-- Common response body extraction shortcuts
+- Response body extraction shortcuts
 - Configuration/property file reading
-- String manipulation helpers specific to the project
+- Project-specific string manipulation
 - Retry or wait utilities
 
 ## What Does NOT Belong Here
-
-- HTTP request logic → goes in requests/
-- Test data generation → goes in factories/
+- HTTP request logic → `requests/`
+- Test data generation → `factories/`
 - Business logic or domain rules
-- Anything used by only one class (keep it in that class)
+- Anything used by only one class (keep it local)
 
 ## Anti-Patterns
-
-- Do NOT create a generic "Helper" or "Common" god-class
-- Do NOT put stateful logic here — utils are stateless
-- Do NOT duplicate what the standard library already provides
+- Generic "Helper" or "Common" god-class
+- Stateful logic — utils are stateless
+- Duplicating what the standard library provides
