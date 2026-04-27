@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/architecture-guard.py",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/python_hooks/architecture-guard.py",
             "timeout": 10,
             "statusMessage": "Checking architecture rules..."
           }
@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/naming-validator.py",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/python_hooks/naming-validator.py",
             "timeout": 10,
             "statusMessage": "Validating naming convention..."
           }
@@ -30,7 +30,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/compile-check.py",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/python_hooks/compile-check.py",
             "timeout": 120,
             "statusMessage": "Compiling project..."
           }
@@ -41,7 +41,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/test-quality-guard.py",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/python_hooks/test-quality-guard.py",
             "timeout": 10,
             "statusMessage": "Checking test quality..."
           }

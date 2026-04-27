@@ -4,7 +4,8 @@
 Naming rules from CLAUDE.md:
   checks/            -> {Feature}Test.java
   requests/          -> {ApiName}Api.java  (exceptions: Api.java, AuthHelper.java)
-  payloads/response/ -> {Entity}Response.java
+  payloads/response/ -> {Entity}ResponsePayload.java
+  payloads/request/ -> {Entity}RequestPayload.java
   factories/         -> {Name}Factory.java
   utils/             -> {Concern}Utils.java
   mocks/             -> {ApiName}Mock.java
@@ -19,9 +20,15 @@ import sys
 NAMING_RULES = [
     {
         "path": "/payloads/response/",
-        "suffix": "Response.java",
+        "suffix": "ResponsePayload.java",
         "exceptions": [],
-        "message": "Response payloads must end with 'Response.java' (e.g., UserResponse.java)",
+        "message": "Response payloads must end with 'ResponsePayload.java' (e.g., UserResponsePayload.java)",
+    },
+    {
+        "path": "/payloads/request/",
+        "suffix": "RequestPayload.java",
+        "exceptions": [],
+        "message": "Request payloads must end with 'RequestPayload.java' (e.g., UserRequestPayload.java)",
     },
     {
         "path": "/checks/",

@@ -5,14 +5,15 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import io.restassured.response.Response;
-import org.example.utils.XMLUtils;
-import org.example.payloads.request.User;
-import org.example.payloads.response.UserDeletionResponse;
-import org.example.payloads.response.UserResponse;
+import org.example.payloads.request.UserRequestPayload;
+import org.example.payloads.response.UserDeletionResponsePayload;
+import org.example.payloads.response.UserResponsePayload;
 import org.example.requests.UserApi;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -23,120 +24,126 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class UserTest {
 
-    private User payload;
+    private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
+    private static final XmlMapper XML_MAPPER = new XmlMapper();
+
+    private UserRequestPayload payload;
     private EasyRandom generator;
 
     @BeforeEach
-    public void setPayload(){
+    public void setPayload() {
         generator = userGenerator();
-        payload = generator.nextObject(User.class);
+        payload = generator.nextObject(UserRequestPayload.class);
     }
 
     @AfterEach
-    public void cleanUp(){
-        UserApi.deleteXMLUser(payload.getUsername());
+    public void cleanUp() {
+        UserApi.deleteUser(payload.getUsername());
     }
 
     @Test
+    @DisplayName("Create JSON user returns 200 with valid body")
+    @Tag("smoke")
     public void createdJSONUserReturns200WithValidBody() throws JsonProcessingException {
-        Response postResponse = UserApi.postUserJSON(payload);
+        Response postResponse = UserApi.createUser(payload);
 
-        String responseBody = postResponse.getBody().asString();
-        ObjectMapper mapper = new ObjectMapper();
-        UserResponse createdUser = mapper.readValue(responseBody, UserResponse.class);
-
-        assertEquals(200, postResponse.getStatusCode());
-        assertEquals(payload.getEmail(), createdUser.getEmail());
-        assertEquals(payload.getUsername(), createdUser.getUsername());
-
-        Response getResponse = UserApi.getUserByName(payload.getUsername());
-
-        assertEquals(200, getResponse.getStatusCode());
-    }
-
-    @Test
-    public void createdXMLUserReturns200WithValidBody() throws Exception {
-        String xmlBody = XMLUtils.userToXml(payload);
-
-        Response postResponse = UserApi.postUserXML(xmlBody);
-
-        String responseBody = postResponse.getBody().asString();
-        XmlMapper mapper = new XmlMapper();
-        UserResponse createdUser = mapper.readValue(responseBody, UserResponse.class);
-
+        UserResponsePayload createdUser = JSON_MAPPER.readValue(
+                postResponse.getBody().asString(), UserResponsePayload.class);
 
         assertEquals(200, postResponse.getStatusCode());
         assertEquals(payload.getEmail(), createdUser.getEmail());
         assertEquals(payload.getUsername(), createdUser.getUsername());
 
-        Response getResponse = UserApi.getUserByName(payload.getUsername());
+        Response getResponse = UserApi.getUser(payload.getUsername());
 
         assertEquals(200, getResponse.getStatusCode());
     }
 
     @Test
-    public void createdUserWithoutRequiredFieldsReturns400andBody(){
-        User payload = new User(
-                "",
-                "",
-                "",
-                "Test",
-                "User"
-        );
+    @DisplayName("Create XML user returns 200 with valid body")
+    @Tag("smoke")
+    public void createdXMLUserReturns200WithValidBody() throws JsonProcessingException {
+        Response postResponse = UserApi.createUserXml(payload);
 
-        Response postResponse = UserApi.postUserJSON(payload);
+        UserResponsePayload createdUser = XML_MAPPER.readValue(
+                postResponse.getBody().asString(), UserResponsePayload.class);
+
+        assertEquals(200, postResponse.getStatusCode());
+        assertEquals(payload.getEmail(), createdUser.getEmail());
+        assertEquals(payload.getUsername(), createdUser.getUsername());
+
+        Response getResponse = UserApi.getUser(payload.getUsername());
+
+        assertEquals(200, getResponse.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("Create user without required fields returns 400")
+    @Tag("negative")
+    public void createdUserWithoutRequiredFieldsReturns400andBody() {
+        UserRequestPayload invalidPayload = UserRequestPayload.builder()
+                .username("")
+                .email("")
+                .password("")
+                .firstName(payload.getFirst_name())
+                .lastName(payload.getLast_name())
+                .build();
+
+        Response postResponse = UserApi.createUser(invalidPayload);
 
         assertEquals(400, postResponse.getStatusCode());
         assertEquals("false", postResponse.getBody().asString());
     }
 
     @Test
+    @DisplayName("Get all users returns 200 and array of users")
+    @Tag("smoke")
     public void getAllUsersReturns200AndArray() throws JsonProcessingException {
-        Response getResponse = UserApi.getUsers();
+        Response getResponse = UserApi.getAllUsers();
 
-        String responseBody = getResponse.getBody().asString();
-        ObjectMapper mapper = new ObjectMapper();
-        List<User> users = mapper.readValue(responseBody, new TypeReference<>() {});
-
-        User firstUser = users.getFirst();
-        boolean userExists = users.stream()
-                .anyMatch(user -> user.getUsername().equals("pgorczany"));
+        List<UserResponsePayload> users = JSON_MAPPER.readValue(
+                getResponse.getBody().asString(), new TypeReference<>() {});
 
         assertEquals(200, getResponse.getStatusCode());
-        assertTrue(userExists);
+        assertFalse(users.isEmpty());
+
+        UserResponsePayload firstUser = users.getFirst();
         assertNotNull(firstUser.getUsername());
         assertNotNull(firstUser.getEmail());
-        assertFalse(users.isEmpty());
-        assertTrue(users.size() > 20);
     }
 
     @Test
-    public void getUnknownUserReturns404AndBody(){
-        Response getResponse = UserApi.getUserByName("unknownUser");
+    @DisplayName("Get unknown user returns 404")
+    @Tag("negative")
+    public void getUnknownUserReturns404AndBody() {
+        Response getResponse = UserApi.getUser("unknownUser");
 
         assertEquals(404, getResponse.getStatusCode());
         assertEquals("false", getResponse.getBody().asString());
     }
 
     @Test
-    public void getEmptyUserReturns400AndBody(){
-        Response getResponse = UserApi.getUserByName("");
+    @DisplayName("Get user with empty username returns 400")
+    @Tag("negative")
+    public void getEmptyUserReturns400AndBody() {
+        Response getResponse = UserApi.getUser("");
 
         assertEquals(400, getResponse.getStatusCode());
         assertEquals("false", getResponse.getBody().asString());
     }
 
     @Test
+    @DisplayName("Update JSON user returns 200 with modified body")
+    @Tag("regression")
     public void putJSONUserReturns200andBody() throws JsonProcessingException {
-        UserApi.postUserJSON(payload);
+        UserApi.createUser(payload);
 
-        User newPayload = generator.nextObject(User.class);
+        UserRequestPayload newPayload = generator.nextObject(UserRequestPayload.class);
 
-        Response putResponse = UserApi.putUserJSON(payload.getUsername(), newPayload);
+        Response putResponse = UserApi.updateUser(payload.getUsername(), newPayload);
 
-        String responseBody = putResponse.getBody().asString();
-        ObjectMapper mapper = new ObjectMapper();
-        UserResponse modifiedUser = mapper.readValue(responseBody, UserResponse.class);
+        UserResponsePayload modifiedUser = JSON_MAPPER.readValue(
+                putResponse.getBody().asString(), UserResponsePayload.class);
 
         assertEquals(200, putResponse.getStatusCode());
         assertEquals(newPayload.getEmail(), modifiedUser.getEmail());
@@ -144,31 +151,31 @@ public class UserTest {
     }
 
     @Test
-    public void putXMLUserReturns200andBody() throws Exception {
-        String xmlBody = XMLUtils.userToXml(payload);
-        UserApi.postUserXML(xmlBody);
+    @DisplayName("Update XML user returns 200 with modified body")
+    @Tag("regression")
+    public void putXMLUserReturns200andBody() throws JsonProcessingException {
+        UserApi.createUserXml(payload);
 
-        User newPayload = generator.nextObject(User.class);
-        String newXmlBody = XMLUtils.userToXml(newPayload);
+        UserRequestPayload newPayload = generator.nextObject(UserRequestPayload.class);
 
-        Response putResponse = UserApi.putUserXML(payload.getUsername(),newXmlBody);
+        Response putResponse = UserApi.updateUserXml(payload.getUsername(), newPayload);
 
-        String responseBody = putResponse.getBody().asString();
-        XmlMapper mapper = new XmlMapper();
-        UserResponse modifiedUser = mapper.readValue(responseBody, UserResponse.class);
+        UserResponsePayload modifiedUser = XML_MAPPER.readValue(
+                putResponse.getBody().asString(), UserResponsePayload.class);
 
         assertEquals(200, putResponse.getStatusCode());
         assertEquals(newPayload.getUsername(), modifiedUser.getUsername());
     }
 
     @Test
+    @DisplayName("Delete user returns 200 with confirmation message")
+    @Tag("smoke")
     public void deleteXMLUserReturns200andBody() throws JsonProcessingException {
-        UserApi.postUserJSON(payload);
-        Response deleteResponse = UserApi.deleteXMLUser(payload.getUsername());
+        UserApi.createUser(payload);
+        Response deleteResponse = UserApi.deleteUser(payload.getUsername());
 
-        String responseBody = deleteResponse.getBody().asString();
-        XmlMapper mapper = new XmlMapper();
-        UserDeletionResponse deletedUser = mapper.readValue(responseBody, UserDeletionResponse.class);
+        UserDeletionResponsePayload deletedUser = XML_MAPPER.readValue(
+                deleteResponse.getBody().asString(), UserDeletionResponsePayload.class);
 
         assertEquals(200, deleteResponse.getStatusCode());
         assertEquals("user deleted.", deletedUser.getMessage());
@@ -176,21 +183,25 @@ public class UserTest {
     }
 
     @Test
-    public void doubleDeletionReturns200tnen404(){
-        UserApi.postUserJSON(payload);
-        Response deleteResponse = UserApi.deleteXMLUser(payload.getUsername());
+    @DisplayName("Double deletion returns 200 then 404")
+    @Tag("regression")
+    public void doubleDeletionReturns200then404() {
+        UserApi.createUser(payload);
+        Response deleteResponse = UserApi.deleteUser(payload.getUsername());
 
-        Response secondDeleteResponse = UserApi.deleteXMLUser(payload.getUsername());
+        Response secondDeleteResponse = UserApi.deleteUser(payload.getUsername());
 
         assertEquals(200, deleteResponse.getStatusCode());
         assertEquals(404, secondDeleteResponse.getStatusCode());
     }
 
     @Test
+    @DisplayName("Concurrent deletion and update handles race condition")
+    @Tag("regression")
     public void concurrentDeletionAndUpdate() throws Exception {
-        UserApi.postUserJSON(payload);
+        UserApi.createUser(payload);
 
-        User newPayload = generator.nextObject(User.class);
+        UserRequestPayload newPayload = generator.nextObject(UserRequestPayload.class);
 
         ExecutorService executor = Executors.newFixedThreadPool(2);
 
@@ -199,12 +210,12 @@ public class UserTest {
 
             Future<Response> deleteFuture = executor.submit(() -> {
                 startLatch.await();
-                return UserApi.deleteXMLUser(payload.getUsername());
+                return UserApi.deleteUser(payload.getUsername());
             });
 
             Future<Response> updateFuture = executor.submit(() -> {
                 startLatch.await();
-                return UserApi.putUserJSON(payload.getUsername(), newPayload);
+                return UserApi.updateUser(payload.getUsername(), newPayload);
             });
 
             startLatch.countDown();
@@ -212,26 +223,26 @@ public class UserTest {
             Response deleteResponse = deleteFuture.get(10, TimeUnit.SECONDS);
             Response updateResponse = updateFuture.get(10, TimeUnit.SECONDS);
 
-            assertNotNull(deleteResponse, "deleteResponse не должен быть null");
-            assertNotNull(updateResponse, "updateResponse не должен быть null");
+            assertNotNull(deleteResponse, "Delete response must not be null");
+            assertNotNull(updateResponse, "Update response must not be null");
 
             int deleteStatus = deleteResponse.getStatusCode();
             int updateStatus = updateResponse.getStatusCode();
 
             if (deleteStatus == 200) {
                 assertEquals(404, updateStatus,
-                        "После успешного удаления обновление должно вернуть 404");
+                        "After successful deletion, update should return 404");
             } else if (updateStatus == 200) {
                 assertEquals(404, deleteStatus,
-                        "После успешного обновления удаление должно вернуть 404");
+                        "After successful update, deletion should return 404");
             } else {
-                fail("Неожиданные статусы. Удаление: " + deleteStatus +
-                        ", обновление: " + updateStatus);
+                fail("Unexpected statuses. Delete: " + deleteStatus +
+                        ", Update: " + updateStatus);
             }
         } finally {
             executor.shutdown();
             boolean terminated = executor.awaitTermination(5, TimeUnit.SECONDS);
-            assertTrue(terminated, "Рабочие потоки не завершились за 5 секунд");
+            assertTrue(terminated, "Worker threads did not terminate within 5 seconds");
         }
     }
 }

@@ -1,34 +1,19 @@
 package org.example.utils;
-import org.example.payloads.request.User;
-import org.example.payloads.response.UserResponse;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import java.io.StringReader;
-import java.io.StringWriter;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import org.example.payloads.request.UserRequestPayload;
 
-public class XMLUtils {
+public final class XMLUtils {
 
-    public static String userToXml(User user) throws Exception {
-        JAXBContext context = JAXBContext.newInstance(User.class);
-        Marshaller marshaller = context.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+    private static final XmlMapper XML_MAPPER = new XmlMapper();
 
-        StringWriter writer = new StringWriter();
-        marshaller.marshal(user, writer);
-        return writer.toString();
-    }
+    private XMLUtils() {}
 
-    public static User xmlToUser(String xml) throws Exception {
-        JAXBContext context = JAXBContext.newInstance(User.class);
-        Unmarshaller unmarshaller = context.createUnmarshaller();
-        return (User) unmarshaller.unmarshal(new StringReader(xml));
-    }
-
-    public static UserResponse xmlToUserResponse(String xml) throws Exception {
-        JAXBContext context = JAXBContext.newInstance(UserResponse.class);
-        Unmarshaller unmarshaller = context.createUnmarshaller();
-        return (UserResponse) unmarshaller.unmarshal(new StringReader(xml));
+    public static String userToXml(UserRequestPayload user) {
+        try {
+            return XML_MAPPER.writeValueAsString(user);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

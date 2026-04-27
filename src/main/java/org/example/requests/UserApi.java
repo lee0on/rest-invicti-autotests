@@ -2,63 +2,110 @@ package org.example.requests;
 
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import org.example.payloads.request.User;
+import org.example.payloads.request.UserRequestPayload;
+import org.example.utils.XMLUtils;
 
+/**
+ * HTTP request abstraction for the User API.
+ */
 public class UserApi extends Api {
 
-    private static final String baseUrl = apiUrl + "users";
+    private static final String BASE_URL = apiUrl + "users";
 
-    public static Response postUserJSON(User payload){
+    /**
+     * Creates a new user via JSON POST.
+     *
+     * @param payload user data to create
+     * @return the API response
+     */
+    public static Response createUser(UserRequestPayload payload) {
         return AuthHelper.login()
                 .contentType(ContentType.JSON)
-                .header("Accept", "application/json")
+                .accept(ContentType.JSON)
                 .body(payload)
                 .when()
-                .post(baseUrl);
+                .post(BASE_URL);
     }
 
-    public static Response postUserXML(String payload){
+    /**
+     * Creates a new user via XML POST.
+     *
+     * @param payload user data to create
+     * @return the API response
+     */
+    public static Response createUserXml(UserRequestPayload payload) {
         return AuthHelper.login()
                 .contentType(ContentType.XML)
-                .header("Accept", "application/xml")
-                .body(payload)
+                .accept(ContentType.XML)
+                .body(XMLUtils.userToXml(payload))
                 .when()
-                .post(baseUrl);
+                .post(BASE_URL);
     }
 
-    public static Response getUserByName(String username){
+    /**
+     * Retrieves a user by username.
+     *
+     * @param username the username to look up
+     * @return the API response
+     */
+    public static Response getUser(String username) {
         return AuthHelper.login()
                 .when()
-                .get(baseUrl + "/" + username);
+                .get(BASE_URL + "/" + username);
     }
 
-    public static Response getUsers(){
+    /**
+     * Retrieves all users.
+     *
+     * @return the API response containing the user list
+     */
+    public static Response getAllUsers() {
         return AuthHelper.login()
                 .when()
-                .get(baseUrl);
+                .get(BASE_URL);
     }
 
-    public static Response putUserJSON(String username, User payload){
+    /**
+     * Updates a user via JSON PUT.
+     *
+     * @param username the username to update
+     * @param payload  updated user data
+     * @return the API response
+     */
+    public static Response updateUser(String username, UserRequestPayload payload) {
         return AuthHelper.login()
                 .contentType(ContentType.JSON)
                 .body(payload)
                 .when()
-                .put(baseUrl + "/" + username);
+                .put(BASE_URL + "/" + username);
     }
 
-    public static Response putUserXML(String username, String payload){
+    /**
+     * Updates a user via XML PUT.
+     *
+     * @param username the username to update
+     * @param payload  updated user data
+     * @return the API response
+     */
+    public static Response updateUserXml(String username, UserRequestPayload payload) {
         return AuthHelper.login()
                 .contentType(ContentType.XML)
-                .header("Accept", "application/xml")
-                .body(payload)
+                .accept(ContentType.XML)
+                .body(XMLUtils.userToXml(payload))
                 .when()
-                .put(baseUrl + "/" + username);
+                .put(BASE_URL + "/" + username);
     }
 
-    public static Response deleteXMLUser(String username){
+    /**
+     * Deletes a user by username.
+     *
+     * @param username the username to delete
+     * @return the API response in XML format
+     */
+    public static Response deleteUser(String username) {
         return AuthHelper.login()
-                .header("Accept", "application/xml")
+                .accept(ContentType.XML)
                 .when()
-                .delete(baseUrl + "/" + username);
+                .delete(BASE_URL + "/" + username);
     }
 }
