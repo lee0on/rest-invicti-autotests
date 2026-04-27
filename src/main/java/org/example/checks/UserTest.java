@@ -108,8 +108,8 @@ public class UserTest {
         assertFalse(users.isEmpty());
 
         UserResponsePayload firstUser = users.getFirst();
-        assertNotNull(firstUser.getUsername());
-        assertNotNull(firstUser.getEmail());
+        assertFalse(firstUser.getUsername().isBlank(), "username must be non-blank");
+        assertFalse(firstUser.getEmail().isBlank(), "email must be non-blank");
     }
 
     @Test
@@ -193,6 +193,140 @@ public class UserTest {
 
         assertEquals(200, deleteResponse.getStatusCode());
         assertEquals(404, secondDeleteResponse.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("Create user with duplicate username returns error")
+    @Tag("negative")
+    public void createDuplicateUserReturnsError() {
+        UserApi.createUser(payload);
+
+        UserRequestPayload duplicatePayload = UserRequestPayload.builder()
+                .username(payload.getUsername())
+                .email(generator.nextObject(UserRequestPayload.class).getEmail())
+                .password(payload.getPassword())
+                .firstName(payload.getFirst_name())
+                .lastName(payload.getLast_name())
+                .build();
+
+        Response duplicateResponse = UserApi.createUser(duplicatePayload);
+
+        assertTrue(duplicateResponse.getStatusCode() == 400 || duplicateResponse.getStatusCode() == 409,
+                "Duplicate username should return 400 or 409, got: " + duplicateResponse.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("Create JSON user returns response with user_id and created_at")
+    @Tag("regression")
+    public void createUserReturnsAllResponseFields() throws JsonProcessingException {
+        Response postResponse = UserApi.createUser(payload);
+
+        UserResponsePayload createdUser = JSON_MAPPER.readValue(
+                postResponse.getBody().asString(), UserResponsePayload.class);
+
+        assertEquals(200, postResponse.getStatusCode());
+        assertEquals(payload.getUsername(), createdUser.getUsername());
+        assertEquals(payload.getEmail(), createdUser.getEmail());
+        assertEquals(payload.getFirst_name(), createdUser.getFirst_name());
+        assertEquals(payload.getLast_name(), createdUser.getLast_name());
+        assertFalse(createdUser.getUser_id().isBlank(), "user_id must be non-blank in response");
+        assertFalse(createdUser.getCreated_at().isBlank(), "created_at must be non-blank in response");
+    }
+
+    @Test
+    @DisplayName("Get user by username returns full matching data")
+    @Tag("regression")
+    public void getUserReturnsFullMatchingData() throws JsonProcessingException {
+        UserApi.createUser(payload);
+
+        Response getResponse = UserApi.getUser(payload.getUsername());
+
+        UserResponsePayload fetchedUser = JSON_MAPPER.readValue(
+                getResponse.getBody().asString(), UserResponsePayload.class);
+
+        assertEquals(200, getResponse.getStatusCode());
+        assertEquals(payload.getUsername(), fetchedUser.getUsername());
+        assertEquals(payload.getEmail(), fetchedUser.getEmail());
+        assertEquals(payload.getFirst_name(), fetchedUser.getFirst_name());
+        assertEquals(payload.getLast_name(), fetchedUser.getLast_name());
+        assertFalse(fetchedUser.getUser_id().isBlank(), "user_id must be non-blank");
+    }
+
+    @Test
+    @DisplayName("Update non-existent user returns 404")
+    @Tag("negative")
+    public void updateNonExistentUserReturns404() {
+        UserRequestPayload newPayload = generator.nextObject(UserRequestPayload.class);
+
+        Response putResponse = UserApi.updateUser("nonExistentUser_xyz", newPayload);
+
+        assertEquals(404, putResponse.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("Update user with empty required fields returns 400")
+    @Tag("negative")
+    public void updateUserWithEmptyFieldsReturns400() {
+        UserApi.createUser(payload);
+
+        UserRequestPayload invalidPayload = UserRequestPayload.builder()
+                .username("")
+                .email("")
+                .password("")
+                .firstName("")
+                .lastName("")
+                .build();
+
+        Response putResponse = UserApi.updateUser(payload.getUsername(), invalidPayload);
+
+        assertEquals(400, putResponse.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("Update user reflects changes on subsequent GET")
+    @Tag("regression")
+    public void updateUserReflectsChangesOnGet() throws JsonProcessingException {
+        UserApi.createUser(payload);
+
+        UserRequestPayload updatedPayload = generator.nextObject(UserRequestPayload.class);
+
+        UserApi.updateUser(payload.getUsername(), updatedPayload);
+
+        Response getResponse = UserApi.getUser(updatedPayload.getUsername());
+
+        UserResponsePayload fetchedUser = JSON_MAPPER.readValue(
+                getResponse.getBody().asString(), UserResponsePayload.class);
+
+        assertEquals(200, getResponse.getStatusCode());
+        assertEquals(updatedPayload.getEmail(), fetchedUser.getEmail());
+        assertEquals(updatedPayload.getFirst_name(), fetchedUser.getFirst_name());
+        assertEquals(updatedPayload.getLast_name(), fetchedUser.getLast_name());
+    }
+
+    @Test
+    @DisplayName("Delete non-existent user returns 404")
+    @Tag("negative")
+    public void deleteNonExistentUserReturns404() {
+        Response deleteResponse = UserApi.deleteUser("nonExistentUser_xyz");
+
+        assertEquals(404, deleteResponse.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("Create XML user without required fields returns 400")
+    @Tag("negative")
+    public void createXmlUserWithoutRequiredFieldsReturns400() {
+        UserRequestPayload invalidPayload = UserRequestPayload.builder()
+                .username("")
+                .email("")
+                .password("")
+                .firstName(payload.getFirst_name())
+                .lastName(payload.getLast_name())
+                .build();
+
+        Response postResponse = UserApi.createUserXml(invalidPayload);
+
+        assertEquals(400, postResponse.getStatusCode());
     }
 
     @Test
