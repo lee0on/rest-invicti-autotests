@@ -2,7 +2,7 @@
 
 ## Purpose
 Reference catalog of assertion strategies for API test checks.
-All assertions use fluent style (AssertJ or equivalent).
+All assertions use fluent style (JUnit).
 
 ## Status Code
 Assert exact status code match. For range checks, assert within expected range.

@@ -13,7 +13,7 @@ $ARGUMENTS = what to test. Accepts either:
     - Each test follows Arrange → Act → Assert
     - Arrange: data via `EasyRandomFactory` or Builder for scenario-specific values
     - Act: call request class method
-    - Assert: AssertJ fluent assertions following Assertion Patterns skill
+    - Assert: JUnit assertions following Assertion Patterns skill
     - Every test has `@Test`, `@DisplayName`, `@Tag`
 6. Cover at minimum: happy path, one validation error (400), one auth error (401), one not found (404)
 7. Verify the file compiles

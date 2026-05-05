@@ -1,0 +1,372 @@
+openapi: 3.1.0
+info:
+  title: rest.testinvicti.com (Basic Authentication)
+  version: 1.0.0
+  description: >-
+    This collection covers the REST API of **rest.testsparker.com** secured with
+    **Basic Authentication**. It is intended for exploring, testing, and
+    validating the core endpoints of this demo API across three resource
+    domains:
+
+
+    - **User** — create, retrieve, update, and delete user accounts; fetch posts
+    belonging to a specific user (12 requests)
+
+    - **Post** — full CRUD operations on posts, including retrieval of comments
+    per post (12 requests)
+
+    - **Comment** — full CRUD operations on comments (10 requests)
+
+
+    All requests are available in both **JSON** and **XML** formats,
+    demonstrating content negotiation. A root path health-check request is also
+    included.
+
+
+    > **Authentication:** Every request requires Basic Authentication
+    credentials to be configured at the collection level.
+servers:
+  - url: http://rest.testsparker.com
+paths:
+  /basic_authentication/api/users:
+    get:
+      summary: Get all users
+      parameters:
+        - name: Host
+          in: header
+          schema:
+            type: string
+      responses: { }
+      tags:
+        - User
+    post:
+      summary: Add new user
+      parameters:
+        - name: Host
+          in: header
+          schema:
+            type: string
+      responses: { }
+      tags:
+        - User
+  /basic_authentication/api/users/{username}:
+    get:
+      summary: Get user
+      parameters:
+        - name: Host
+          in: header
+          schema:
+            type: string
+      responses: { }
+      tags:
+        - User
+    parameters:
+      - name: username
+        in: path
+        required: true
+        schema:
+          type: string
+    put:
+      summary: Edit user
+      parameters:
+        - name: Host
+          in: header
+          schema:
+            type: string
+      responses: { }
+      tags:
+        - User
+    delete:
+      summary: Delete user
+      parameters:
+        - name: callback
+          in: query
+          schema:
+            type: string
+        - name: Host
+          in: header
+          schema:
+            type: string
+      responses: { }
+      tags:
+        - User
+  /basic_authentication/api/users/{username}/posts:
+    get:
+      summary: Get user posts
+      parameters:
+        - name: Host
+          in: header
+          schema:
+            type: string
+      responses: { }
+      tags:
+        - User
+    parameters:
+      - name: username
+        in: path
+        required: true
+        schema:
+          type: string
+  /basic_authentication/api/posts:
+    get:
+      summary: Get all posts
+      parameters:
+        - name: Host
+          in: header
+          schema:
+            type: string
+      responses:
+        200:
+          description: All posts retrieved successfully
+          content:
+            text/html:
+              example:
+                - post_id: "21"
+                  user_id: "89"
+                  title: "First post"
+                  created_at: "2018-11-30 05:54:38"
+                - post_id: "22"
+                  user_id: "90"
+                  title: "Second post"
+                  created_at: "2018-12-01 10:00:00"
+      tags:
+        - Post
+    post:
+      summary: Add new post
+      parameters:
+        - name: Host
+          in: header
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              user_id: "21"
+              title: "test post title"
+              content: "test content"
+      responses:
+        200:
+          description: Post created successfully
+          content:
+            text/html:
+              example:
+                user_id: "21"
+                title: "test post title"
+                content: "test content"
+                created_at: "2026-05-03 14:07:32"
+                post_id: "327"
+      tags:
+        - Post
+  /basic_authentication/api/posts/{postId}:
+    get:
+      summary: Get post
+      parameters:
+        - name: Host
+          in: header
+          schema:
+            type: string
+        - name: postId
+          in: path
+          required: true
+      responses:
+        200:
+          description: Post retrieved successfully
+          content:
+            text/html:
+              example:
+                post_id: "21"
+                post:
+                  post_id: "21"
+                  user_id: "89"
+                  title: "Ad iusto cumque impedit autem quaerat."
+                  content: "Molestiae sequi omnis mollitia delectus. Aut earum doloremque non omnis eveniet. Molestias accusantium non modi ratione et iure quia eos. Quidem et sint excepturi debitis."
+                  created_at: "2018-11-30 05:54:38"
+        404:
+          description: Not found
+          content:
+            text/html:
+              example:
+                post_id: "post_id"
+                post: false
+        400:
+          description: Bad Request
+          content:
+            text/html:
+              example:
+                post_id: "post_id"
+                post: false
+      tags:
+        - Post
+    put:
+      summary: Edit post
+      parameters:
+        - name: Host
+          in: header
+          schema:
+            type: string
+        - name: postId
+          in: path
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              user_id: "21"
+              title: "test post title"
+              content: "test content"
+      responses:
+        200:
+          description: Post updated
+          content:
+            text/html:
+              schema:
+                type: object
+              example:
+                post:
+                  user_id: "34"
+                  title: "test post title22"
+                  content: "test content22"
+                  post_id: "5"
+                response: null
+      tags:
+        - Post
+    delete:
+      summary: Delete post
+      parameters:
+        - name: postId
+          in: path
+          required: true
+        - name: Host
+          in: header
+          schema:
+            type: string
+      responses:
+        200:
+          description: Post deleted
+          content:
+            text/html:
+              schema:
+                type: object
+              example:
+                message: "post deleted."
+                post_id: "5"
+      tags:
+        - Post
+  /basic_authentication/api/posts/{postId}/comments:
+    get:
+      summary: Get post comments
+      parameters:
+        - name: Host
+          in: header
+          schema:
+            type: string
+        - name: postId
+          in: path
+          required: true
+      responses:
+        200:
+          description: List of comments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+              example:
+                - comment_id: "18"
+                  user_id: "82"
+                  post_id: "5"
+                  comment: "Though they were mine before..."
+                  created_at: "1973-04-24 20:01:29"
+                - comment_id: "61"
+                  user_id: "7"
+                  post_id: "5"
+                  comment: "The Knave of Hearts..."
+                  created_at: "1981-11-25 13:08:19"
+      tags:
+        - Post
+  /basic_authentication/api/comments:
+    get:
+      summary: Get all comments
+      parameters:
+        - name: Host
+          in: header
+          schema:
+            type: string
+      responses: { }
+      tags:
+        - Comment
+    post:
+      summary: Add new comment
+      parameters:
+        - name: Host
+          in: header
+          schema:
+            type: string
+      responses: { }
+      tags:
+        - Comment
+  /basic_authentication/api/comments/{commentId}:
+    get:
+      summary: Get comment
+      parameters:
+        - name: Host
+          in: header
+          schema:
+            type: string
+      responses: { }
+      tags:
+        - Comment
+    parameters:
+      - name: commentId
+        in: path
+        required: true
+        schema:
+          type: integer
+    put:
+      summary: Edit comment
+      parameters:
+        - name: Host
+          in: header
+          schema:
+            type: string
+      responses: { }
+      tags:
+        - Comment
+    delete:
+      summary: Delete comment
+      parameters:
+        - name: Host
+          in: header
+          schema:
+            type: string
+      responses: { }
+      tags:
+        - Comment
+  /basic_authentication/api/:
+    get:
+      summary: Test root path
+      parameters:
+        - name: Host
+          in: header
+          schema:
+            type: string
+      responses:
+        401:
+          description: Unauthorized
+          content:
+            text/html:
+              example:
+                ""
+components:
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+security:
+  - BasicAuth: []

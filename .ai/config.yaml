@@ -39,9 +39,6 @@ conventions:
     assertion_style: "fluent"       # fluent chain assertions
 
 apis:
-  - name: ""
-    spec: "specs/.yaml"
-    base_url_env: "_API_URL"
-  - name: ""
-    spec: "specs/.yaml"
-    base_url_env: "_API_URL"
+  - name: "rest.testinvicti.com"
+    spec: "specs/invicti.yaml"
+    base_url_env: http://rest.testsparker.com"

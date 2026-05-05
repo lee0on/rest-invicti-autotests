@@ -25,6 +25,15 @@ public final class EasyRandomFactory {
         return new EasyRandom(parameters);
     }
 
+    public static EasyRandom postGenerator() {
+        EasyRandomParameters parameters = new EasyRandomParameters()
+                .seed(228L)
+                .randomize(named("userId"), () -> String.valueOf(faker.number().numberBetween(1, 100)))
+                .randomize(named("title"), () -> faker.lorem().sentence())
+                .randomize(named("content"), () -> faker.lorem().paragraph());
+        return new EasyRandom(parameters);
+    }
+
     private static String generatePassword(){
         return faker.text().text(Text.TextSymbolsBuilder.builder()
                 .len(8)
