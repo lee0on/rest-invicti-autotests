@@ -298,7 +298,26 @@ paths:
           in: header
           schema:
             type: string
-      responses: { }
+      responses:
+        200:
+          description: All comments retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+              example:
+                - comment_id: "18"
+                  user_id: "82"
+                  post_id: "5"
+                  comment: "Though they were mine before, I never saw them so confident."
+                  created_at: "2018-11-30 06:12:44"
+                - comment_id: "61"
+                  user_id: "7"
+                  post_id: "5"
+                  comment: "The Knave of Hearts kept a steady eye on the proceedings."
+                  created_at: "2018-12-02 09:41:07"
       tags:
         - Comment
     post:
@@ -308,7 +327,33 @@ paths:
           in: header
           schema:
             type: string
-      responses: { }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              user_id: "82"
+              post_id: "5"
+              comment: "test comment content"
+      responses:
+        200:
+          description: Comment created successfully
+          content:
+            text/html:
+              example:
+                user_id: "82"
+                post_id: "5"
+                comment: "test comment content"
+                created_at: "2026-05-03 14:09:18"
+                comment_id: "104"
+        400:
+          description: Bad Request
+          content:
+            text/html:
+              example:
+                comment_id: false
+                message: "user_id, post_id and comment are required."
       tags:
         - Comment
   /basic_authentication/api/comments/{commentId}:
@@ -319,7 +364,33 @@ paths:
           in: header
           schema:
             type: string
-      responses: { }
+      responses:
+        200:
+          description: Comment retrieved successfully
+          content:
+            text/html:
+              example:
+                comment_id: "18"
+                comment:
+                  comment_id: "18"
+                  user_id: "82"
+                  post_id: "5"
+                  comment: "Though they were mine before, I never saw them so confident."
+                  created_at: "2018-11-30 06:12:44"
+        404:
+          description: Not found
+          content:
+            text/html:
+              example:
+                comment_id: "comment_id"
+                comment: false
+        400:
+          description: Bad Request
+          content:
+            text/html:
+              example:
+                comment_id: "comment_id"
+                comment: false
       tags:
         - Comment
     parameters:
@@ -335,7 +406,29 @@ paths:
           in: header
           schema:
             type: string
-      responses: { }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+            example:
+              user_id: "82"
+              post_id: "5"
+              comment: "updated comment content"
+      responses:
+        200:
+          description: Comment updated
+          content:
+            text/html:
+              schema:
+                type: object
+              example:
+                comment:
+                  user_id: "82"
+                  post_id: "5"
+                  comment: "updated comment content"
+                  comment_id: "18"
+                response: null
       tags:
         - Comment
     delete:
@@ -345,7 +438,16 @@ paths:
           in: header
           schema:
             type: string
-      responses: { }
+      responses:
+        200:
+          description: Comment deleted
+          content:
+            text/html:
+              schema:
+                type: object
+              example:
+                message: "comment deleted."
+                comment_id: "18"
       tags:
         - Comment
   /basic_authentication/api/:

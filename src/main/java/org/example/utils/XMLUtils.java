@@ -1,6 +1,7 @@
 package org.example.utils;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import org.example.payloads.request.CommentRequestPayload;
 import org.example.payloads.request.PostRequestPayload;
 import org.example.payloads.request.UserRequestPayload;
 
@@ -21,6 +22,14 @@ public final class XMLUtils {
     public static String postToXml(PostRequestPayload post) {
         try {
             return XML_MAPPER.writeValueAsString(post);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static String commentToXml(CommentRequestPayload comment) {
+        try {
+            return XML_MAPPER.writeValueAsString(comment);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

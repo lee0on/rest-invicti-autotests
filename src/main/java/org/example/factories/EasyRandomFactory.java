@@ -34,6 +34,15 @@ public final class EasyRandomFactory {
         return new EasyRandom(parameters);
     }
 
+    public static EasyRandom commentGenerator() {
+        EasyRandomParameters parameters = new EasyRandomParameters()
+                .seed(228L)
+                .randomize(named("userId"), () -> String.valueOf(faker.number().numberBetween(1, 100)))
+                .randomize(named("postId"), () -> String.valueOf(faker.number().numberBetween(1, 100)))
+                .randomize(named("comment"), () -> faker.lorem().sentence());
+        return new EasyRandom(parameters);
+    }
+
     private static String generatePassword(){
         return faker.text().text(Text.TextSymbolsBuilder.builder()
                 .len(8)
