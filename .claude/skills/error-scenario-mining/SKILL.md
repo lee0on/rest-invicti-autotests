@@ -1,3 +1,8 @@
+---
+name: error-scenario-mining
+description: Systematically identify error scenarios and edge cases for an API endpoint — covering HTTP method semantics, auth/authorization, body validation, path/query params, business logic, and resilience failures. Use when designing negative and boundary test coverage.
+---
+
 # Skill: Error Scenario Mining
 
 ## Purpose

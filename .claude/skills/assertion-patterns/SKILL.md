@@ -1,3 +1,8 @@
+---
+name: assertion-patterns
+description: Reference catalog of assertion strategies for API test checks — status codes, single/collection responses, nested path expressions, error bodies, headers, response time, and soft assertions. Use when writing test assertions.
+---
+
 # Skill: Assertion Patterns
 
 ## Purpose

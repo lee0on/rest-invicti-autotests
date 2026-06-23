@@ -1,3 +1,11 @@
+---
+name: code-reviewer
+description: Use when you need to validate generated or modified code against framework architecture rules, naming conventions, and test quality standards.
+tools: Read, Glob, Grep, Bash
+model: opus
+color: red
+---
+
 # Agent: Code Reviewer
 
 ## Role

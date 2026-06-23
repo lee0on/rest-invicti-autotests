@@ -1,3 +1,11 @@
+---
+name: orchestrator
+description: Use when you need to coordinate a multi-step workflow involving multiple agents (e.g., generating a full endpoint coverage, updating after API changes, or any task requiring payloads + requests + checks + review).
+tools: Agent, Read, Glob, Grep, Bash
+model: opus
+color: purple
+---
+
 # Agent: Orchestrator
 
 ## Role

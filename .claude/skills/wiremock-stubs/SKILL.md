@@ -1,3 +1,8 @@
+---
+name: wiremock-stubs
+description: Create WireMock stub configurations (programmatic Java or declarative JSON) to isolate tests from external API dependencies — covering scenario types, request matching, stateful flows, and XML stubs. Use when mocking API endpoints.
+---
+
 # Skill: WireMock Stubs
 
 ## Purpose

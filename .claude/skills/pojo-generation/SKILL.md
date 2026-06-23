@@ -1,3 +1,8 @@
+---
+name: pojo-generation
+description: Generate typed Java data classes from API schemas, examples, or descriptions — covering class structure order, request vs response differences, and type-mapping principles. Use when creating request/response payload POJOs.
+---
+
 # Skill: POJO Generation
 
 ## Purpose

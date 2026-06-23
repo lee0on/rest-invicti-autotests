@@ -1,3 +1,11 @@
+---
+name: bdd-writer
+description: Use when you need to write Gherkin feature files and Cucumber step definitions from business requirements or acceptance criteria.
+tools: Read, Write, Edit, Glob, Grep
+model: sonnet
+color: cyan
+---
+
 # Agent: BDD Writer
 
 ## Role

@@ -1,3 +1,8 @@
+---
+name: test-data-generation
+description: Generate realistic, constraint-aware test data across all categories (valid, controlled, invalid, boundary, edge cases) using Faker provider selection and seed management. Use when building payloads or factory methods for tests.
+---
+
 # Skill: Test Data Generation
 
 ## Purpose

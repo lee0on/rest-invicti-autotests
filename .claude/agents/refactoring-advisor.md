@@ -1,3 +1,11 @@
+---
+name: refactoring-advisor
+description: Use when you need to analyze existing code for technical debt, duplication, architecture violations, and improvement opportunities.
+tools: Read, Glob, Grep, Bash
+model: opus
+color: violet
+---
+
 # Agent: Refactoring Advisor
 
 ## Role

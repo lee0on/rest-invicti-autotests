@@ -1,3 +1,8 @@
+---
+name: request-abstraction
+description: Build HTTP request methods that encapsulate endpoint details in one place — per-verb method design (GET/POST/PUT/PATCH/DELETE) and key principles like returning raw Response and never asserting. Use when creating request abstraction classes.
+---
+
 # Skill: Request Abstraction
 
 ## Purpose

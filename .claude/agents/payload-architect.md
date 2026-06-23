@@ -1,3 +1,11 @@
+---
+name: payload-architect
+description: Use when you need to generate or update POJO classes for HTTP request/response bodies from an OpenAPI spec, JSON example, or plain text description.
+tools: Read, Write, Edit, Glob, Grep
+model: sonnet
+color: amber
+---
+
 # Agent: Payload Architect
 
 ## Role

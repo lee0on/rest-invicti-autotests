@@ -1,3 +1,8 @@
+---
+name: openapi-parsing
+description: Extract structured information (endpoints, schemas, authentication) from OpenAPI 3.x and Swagger 2.0 specifications, accounting for version differences. Use when analyzing an API spec to drive payload, request, or test generation.
+---
+
 # Skill: OpenAPI Parsing
 
 ## Purpose

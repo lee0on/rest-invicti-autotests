@@ -1,3 +1,8 @@
+---
+name: gherkin-authoring
+description: Write well-structured Gherkin feature files in business-readable language — step types (Given/When/Then), parameterization, tags, language rules, and step reusability. Use when authoring Cucumber feature files.
+---
+
 # Skill: Gherkin Authoring
 
 ## Purpose

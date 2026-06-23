@@ -1,3 +1,11 @@
+---
+name: mock-engineer
+description: Use when you need to generate WireMock stubs (programmatic Java or declarative JSON) to isolate tests from external API dependencies.
+tools: Read, Write, Edit, Glob, Grep
+model: sonnet
+color: pink
+---
+
 # Agent: Mock Engineer
 
 ## Role

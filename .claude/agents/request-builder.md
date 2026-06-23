@@ -1,3 +1,11 @@
+---
+name: request-builder
+description: Use when you need to create or extend REST Assured HTTP request abstraction classes that group endpoints for an API domain.
+tools: Read, Write, Edit, Glob, Grep
+model: sonnet
+color: blue
+---
+
 # Agent: Request Builder
 
 ## Role
