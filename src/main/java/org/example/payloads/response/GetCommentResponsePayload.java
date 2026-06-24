@@ -21,6 +21,15 @@ public class GetCommentResponsePayload {
 
     public GetCommentResponsePayload() {}
 
+    private GetCommentResponsePayload(Builder builder) {
+        this.commentId = builder.commentId;
+        this.comment = builder.comment;
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public String getCommentId() {
         return commentId;
     }
@@ -49,5 +58,24 @@ public class GetCommentResponsePayload {
                 "commentId='" + commentId + '\'' +
                 ", comment=" + comment +
                 '}';
+    }
+
+    public static class Builder {
+        private String commentId;
+        private CommentResponsePayload comment;
+
+        public Builder commentId(String commentId) {
+            this.commentId = commentId;
+            return this;
+        }
+
+        public Builder comment(CommentResponsePayload comment) {
+            this.comment = comment;
+            return this;
+        }
+
+        public GetCommentResponsePayload build() {
+            return new GetCommentResponsePayload(this);
+        }
     }
 }

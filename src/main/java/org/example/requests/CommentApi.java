@@ -10,7 +10,9 @@ import org.example.utils.XMLUtils;
  */
 public class CommentApi extends Api {
 
-    private static final String BASE_URL = apiUrl + "comments";
+    private static String baseUrl() {
+        return apiUrl() + "comments";
+    }
 
     /**
      * Retrieves all comments.
@@ -20,7 +22,7 @@ public class CommentApi extends Api {
     public static Response getAllComments() {
         return AuthHelper.login()
                 .when()
-                .get(BASE_URL);
+                .get(baseUrl());
     }
 
     /**
@@ -35,7 +37,7 @@ public class CommentApi extends Api {
                 .accept(ContentType.JSON)
                 .body(payload)
                 .when()
-                .post(BASE_URL);
+                .post(baseUrl());
     }
 
     /**
@@ -50,7 +52,7 @@ public class CommentApi extends Api {
                 .accept(ContentType.XML)
                 .body(XMLUtils.commentToXml(payload))
                 .when()
-                .post(BASE_URL);
+                .post(baseUrl());
     }
 
     /**
@@ -62,7 +64,7 @@ public class CommentApi extends Api {
     public static Response getComment(String commentId) {
         return AuthHelper.login()
                 .when()
-                .get(BASE_URL + "/" + commentId);
+                .get(baseUrl() + "/" + commentId);
     }
 
     /**
@@ -77,7 +79,7 @@ public class CommentApi extends Api {
                 .contentType(ContentType.JSON)
                 .body(payload)
                 .when()
-                .put(BASE_URL + "/" + commentId);
+                .put(baseUrl() + "/" + commentId);
     }
 
     /**
@@ -93,7 +95,7 @@ public class CommentApi extends Api {
                 .accept(ContentType.XML)
                 .body(XMLUtils.commentToXml(payload))
                 .when()
-                .put(BASE_URL + "/" + commentId);
+                .put(baseUrl() + "/" + commentId);
     }
 
     /**
@@ -106,6 +108,6 @@ public class CommentApi extends Api {
         return AuthHelper.login()
                 .accept(ContentType.XML)
                 .when()
-                .delete(BASE_URL + "/" + commentId);
+                .delete(baseUrl() + "/" + commentId);
     }
 }

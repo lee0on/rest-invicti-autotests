@@ -10,7 +10,9 @@ import org.example.utils.XMLUtils;
  */
 public class PostApi extends Api {
 
-    private static final String BASE_URL = apiUrl + "posts";
+    private static String baseUrl() {
+        return apiUrl() + "posts";
+    }
 
     /**
      * Retrieves all posts.
@@ -20,7 +22,7 @@ public class PostApi extends Api {
     public static Response getAllPosts() {
         return AuthHelper.login()
                 .when()
-                .get(BASE_URL);
+                .get(baseUrl());
     }
 
     /**
@@ -35,7 +37,7 @@ public class PostApi extends Api {
                 .accept(ContentType.JSON)
                 .body(payload)
                 .when()
-                .post(BASE_URL);
+                .post(baseUrl());
     }
 
     /**
@@ -50,7 +52,7 @@ public class PostApi extends Api {
                 .accept(ContentType.XML)
                 .body(XMLUtils.postToXml(payload))
                 .when()
-                .post(BASE_URL);
+                .post(baseUrl());
     }
 
     /**
@@ -62,7 +64,7 @@ public class PostApi extends Api {
     public static Response getPost(String postId) {
         return AuthHelper.login()
                 .when()
-                .get(BASE_URL + "/" + postId);
+                .get(baseUrl() + "/" + postId);
     }
 
     /**
@@ -77,7 +79,7 @@ public class PostApi extends Api {
                 .contentType(ContentType.JSON)
                 .body(payload)
                 .when()
-                .put(BASE_URL + "/" + postId);
+                .put(baseUrl() + "/" + postId);
     }
 
     /**
@@ -93,7 +95,7 @@ public class PostApi extends Api {
                 .accept(ContentType.XML)
                 .body(XMLUtils.postToXml(payload))
                 .when()
-                .put(BASE_URL + "/" + postId);
+                .put(baseUrl() + "/" + postId);
     }
 
     /**
@@ -106,7 +108,7 @@ public class PostApi extends Api {
         return AuthHelper.login()
                 .accept(ContentType.XML)
                 .when()
-                .delete(BASE_URL + "/" + postId);
+                .delete(baseUrl() + "/" + postId);
     }
 
     /**
@@ -118,6 +120,6 @@ public class PostApi extends Api {
     public static Response getPostComments(String postId) {
         return AuthHelper.login()
                 .when()
-                .get(BASE_URL + "/" + postId + "/comments");
+                .get(baseUrl() + "/" + postId + "/comments");
     }
 }

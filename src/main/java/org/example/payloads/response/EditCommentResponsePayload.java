@@ -21,6 +21,15 @@ public class EditCommentResponsePayload {
 
     public EditCommentResponsePayload() {}
 
+    private EditCommentResponsePayload(Builder builder) {
+        this.comment = builder.comment;
+        this.response = builder.response;
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public CommentResponsePayload getComment() {
         return comment;
     }
@@ -49,5 +58,24 @@ public class EditCommentResponsePayload {
                 "comment=" + comment +
                 ", response='" + response + '\'' +
                 '}';
+    }
+
+    public static class Builder {
+        private CommentResponsePayload comment;
+        private String response;
+
+        public Builder comment(CommentResponsePayload comment) {
+            this.comment = comment;
+            return this;
+        }
+
+        public Builder response(String response) {
+            this.response = response;
+            return this;
+        }
+
+        public EditCommentResponsePayload build() {
+            return new EditCommentResponsePayload(this);
+        }
     }
 }

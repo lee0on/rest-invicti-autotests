@@ -21,6 +21,15 @@ public class CommentDeletionResponsePayload {
 
     public CommentDeletionResponsePayload() {}
 
+    private CommentDeletionResponsePayload(Builder builder) {
+        this.message = builder.message;
+        this.commentId = builder.commentId;
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public String getMessage() {
         return message;
     }
@@ -49,5 +58,24 @@ public class CommentDeletionResponsePayload {
                 "message='" + message + '\'' +
                 ", commentId='" + commentId + '\'' +
                 '}';
+    }
+
+    public static class Builder {
+        private String message;
+        private String commentId;
+
+        public Builder message(String message) {
+            this.message = message;
+            return this;
+        }
+
+        public Builder commentId(String commentId) {
+            this.commentId = commentId;
+            return this;
+        }
+
+        public CommentDeletionResponsePayload build() {
+            return new CommentDeletionResponsePayload(this);
+        }
     }
 }

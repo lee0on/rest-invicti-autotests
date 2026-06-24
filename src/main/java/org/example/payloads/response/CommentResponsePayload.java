@@ -33,6 +33,18 @@ public class CommentResponsePayload {
 
     public CommentResponsePayload() {}
 
+    private CommentResponsePayload(Builder builder) {
+        this.commentId = builder.commentId;
+        this.userId = builder.userId;
+        this.postId = builder.postId;
+        this.comment = builder.comment;
+        this.createdAt = builder.createdAt;
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public String getCommentId() {
         return commentId;
     }
@@ -79,5 +91,42 @@ public class CommentResponsePayload {
                 ", comment='" + comment + '\'' +
                 ", createdAt='" + createdAt + '\'' +
                 '}';
+    }
+
+    public static class Builder {
+        private String commentId;
+        private String userId;
+        private String postId;
+        private String comment;
+        private String createdAt;
+
+        public Builder commentId(String commentId) {
+            this.commentId = commentId;
+            return this;
+        }
+
+        public Builder userId(String userId) {
+            this.userId = userId;
+            return this;
+        }
+
+        public Builder postId(String postId) {
+            this.postId = postId;
+            return this;
+        }
+
+        public Builder comment(String comment) {
+            this.comment = comment;
+            return this;
+        }
+
+        public Builder createdAt(String createdAt) {
+            this.createdAt = createdAt;
+            return this;
+        }
+
+        public CommentResponsePayload build() {
+            return new CommentResponsePayload(this);
+        }
     }
 }

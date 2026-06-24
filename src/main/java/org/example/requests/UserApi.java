@@ -10,7 +10,9 @@ import org.example.utils.XMLUtils;
  */
 public class UserApi extends Api {
 
-    private static final String BASE_URL = apiUrl + "users";
+    private static String baseUrl() {
+        return apiUrl() + "users";
+    }
 
     /**
      * Creates a new user via JSON POST.
@@ -24,7 +26,7 @@ public class UserApi extends Api {
                 .accept(ContentType.JSON)
                 .body(payload)
                 .when()
-                .post(BASE_URL);
+                .post(baseUrl());
     }
 
     /**
@@ -39,7 +41,7 @@ public class UserApi extends Api {
                 .accept(ContentType.XML)
                 .body(XMLUtils.userToXml(payload))
                 .when()
-                .post(BASE_URL);
+                .post(baseUrl());
     }
 
     /**
@@ -51,7 +53,7 @@ public class UserApi extends Api {
     public static Response getUser(String username) {
         return AuthHelper.login()
                 .when()
-                .get(BASE_URL + "/" + username);
+                .get(baseUrl() + "/" + username);
     }
 
     /**
@@ -62,7 +64,7 @@ public class UserApi extends Api {
     public static Response getAllUsers() {
         return AuthHelper.login()
                 .when()
-                .get(BASE_URL);
+                .get(baseUrl());
     }
 
     /**
@@ -77,7 +79,7 @@ public class UserApi extends Api {
                 .contentType(ContentType.JSON)
                 .body(payload)
                 .when()
-                .put(BASE_URL + "/" + username);
+                .put(baseUrl() + "/" + username);
     }
 
     /**
@@ -93,7 +95,7 @@ public class UserApi extends Api {
                 .accept(ContentType.XML)
                 .body(XMLUtils.userToXml(payload))
                 .when()
-                .put(BASE_URL + "/" + username);
+                .put(baseUrl() + "/" + username);
     }
 
     /**
@@ -106,6 +108,6 @@ public class UserApi extends Api {
         return AuthHelper.login()
                 .accept(ContentType.XML)
                 .when()
-                .delete(BASE_URL + "/" + username);
+                .delete(baseUrl() + "/" + username);
     }
 }
